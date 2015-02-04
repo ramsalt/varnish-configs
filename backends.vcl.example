@@ -1,0 +1,15 @@
+# Ramsalt Backends definition
+
+# To keep it clean simply create and include a file for each backend.
+# In this way we can add and remove a backend in a single line!
+
+include "backends/com.example.nyc.server01.vcl";
+include "backends/com.example.lnd.server01.vcl";
+
+
+#
+# The same goes for directors,let's keep it simple and structured.
+#
+
+include "directors/com.example.stack1.vcl";
+

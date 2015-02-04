@@ -1,0 +1,48 @@
+#
+# Ramslt Host Definition
+#
+# Switch the backend / director based on the required host
+#
+
+sub virtualhost__recv {
+
+
+  # Stack1 Websites
+  if (
+      req.http.host ~ "(.*\.)?stack1\.example\.com$" || # Default: *.stack1.example.com => Stack1
+
+      req.http.host ~ "^(www\.|m\.)?example.com$" ||
+      req.http.host ~ "^website.com$" # www.website.com will not be catched!
+     ) {
+
+    set req.backend = stack1_default;
+  }
+
+
+  # Stack2 Websites
+  elsif (
+    req.http.host ~ "^(.*\.)?stack2.example.com$" ||
+    req.http.host ~ "^www.website.com$" ||
+    req.http.host ~ "^(www\.)another-site.com$"
+    ) {
+
+    set req.backend = stack2_default;
+  }
+
+  # DEFAULT CASE: Pass to Stack1
+  else {
+    set req.backend = stack1_default;
+  }
+
+  # IMPORTANT
+  # Stopping here the execution if we have found a non cacheable website
+  # we simply pass the request to the selected backend.
+  #
+  if (
+      req.http.host ~ "^(www\.)?uncached.example.com$"
+     ) {
+        return (pass);
+  }
+
+}
+
