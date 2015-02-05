@@ -14,7 +14,7 @@ include "backends.vcl";
 
 # Including host definition, used to switch through the backends based on the v-host
 include "hosts.vcl";
-
+include "disabled-hosts.vcl";
 # Drupal related tasks
 include "drupal.vcl";
 
@@ -25,15 +25,30 @@ include "extra/esi_blocks.vcl";
 sub vcl_recv {
 
   # Set a funny header, just to assure that we're using this server
-  set req.http.X-Ramsalt = "42 69 666: Varnish-New";
+  set req.http.X-Ramsalt = "42: Received from Varnish";
+
+  # Set the X-FORWARDED-FOR header to recognize the client in the right way!
+  # Also include prev. header if specified.
+  if (req.restarts == 0 && req.http.X-Forwarded-Proto != "https") {
+    if (req.http.X-Forwarded-For) {
+      set req.http.X-Forwarded-For = req.http.X-Forwarded-For + ", " + client.ip;
+    } else {
+      set req.http.X-Forwarded-For = client.ip;
+    }
+  }
     
   if (req.request == "GET" && req.url ~ "^/varnishcheck$") {
     error 200 "Varnish is Ready";
+  }
+
+  if (req.request != "GET" && req.request != "HEAD") {
+      /* We only deal with GET and HEAD by default */
+      return (pass);
   } 
 
   # Switch the backend based on the host
   call virtualhost__recv;
-
+  call disabledhosts__recv;
 
   # Allow the backend to serve up stale content if it is responding slowly.
   ## We archieve this allowing to keep the content one extra hour
@@ -101,8 +116,9 @@ sub vcl_hash {
   }
 
   # Calling routine to hash the content per role
+  #  and the drupal extra setup
   call esi_block__hash;
-
+  call drupal__hash;
 
   return (hash); 
 }
@@ -134,7 +150,7 @@ sub vcl_fetch {
 
 
 sub vcl_deliver {
-  set resp.http.X-Varnish-Server = "Stack1 Varnish1";
+  set resp.http.X-Varnish-Server = server.hostname;
 
   # Add an header to mark HITs or MISSes on the current request.
   if (obj.hits > 0) {

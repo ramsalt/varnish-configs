@@ -34,15 +34,5 @@ sub virtualhost__recv {
     set req.backend = stack1_default;
   }
 
-  # IMPORTANT
-  # Stopping here the execution if we have found a non cacheable website
-  # we simply pass the request to the selected backend.
-  #
-  if (
-      req.http.host ~ "^(www\.)?uncached.example.com$"
-     ) {
-        return (pass);
-  }
-
 }
 

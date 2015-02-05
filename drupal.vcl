@@ -4,16 +4,6 @@
 
 
 sub drupal__recv {
-  # Set the X-FORWARDED-FOR header to recognize the client in the right way!
-  # Also include prev. header if specified.
-  if (req.restarts == 0) {
-    if (req.http.X-Forwarded-For) {
-      set req.http.X-Forwarded-For = req.http.X-Forwarded-For + ", " + client.ip;
-    } else {
-      set req.http.X-Forwarded-For = client.ip;
-    }
-  }
-
 
   # Do not cache these paths.
   if (
@@ -24,7 +14,9 @@ sub drupal__recv {
       req.url ~ "^/info/.*$" ||
       req.url ~ "^/flag/.*$" ||
       req.url ~ "^.*/ajax/.*$" ||
-      req.url ~ "^.*/ahah/.*$"
+      req.url ~ "^.*/ahah/.*$" ||
+      # Google Login Auth
+      req.url ~ "^/gauth/.*$"
      ) {
     return (pass);
   }
@@ -50,7 +42,7 @@ sub drupal__recv {
   if (req.http.Cookie) {
     set req.http.Cookie = ";" + req.http.Cookie;
     set req.http.Cookie = regsuball(req.http.Cookie, "; +", ";");
-    set req.http.Cookie = regsuball(req.http.Cookie, ";(SESS[a-z0-9]+|NO_CACHE)=", "; \1=");
+    set req.http.Cookie = regsuball(req.http.Cookie, ";(S?SESS[a-z0-9]+|NO_CACHE)=", "; \1=");
     set req.http.Cookie = regsuball(req.http.Cookie, ";[^ ][^;]*", "");
     set req.http.Cookie = regsuball(req.http.Cookie, "^[; ]+|[; ]+$", "");
 
@@ -98,14 +90,13 @@ sub drupal__recv {
 }
 
 
-sub vcl_hash {
+sub drupal__hash {
 
   # Since Drupal 7.21 the images are loaded with a "iotok", which is always different
   #  to mitigeate this problem we remove the token to calculate the hash for the content
-  hash_data(req.http.host);
+  #hash_data(req.http.host);
   hash_data( regsub(req.url, "\?(.*)itok=.+[^&]", "\1") );
 
-  return (hash);
 }
 
 # EOF: Nothing should be added after this line.

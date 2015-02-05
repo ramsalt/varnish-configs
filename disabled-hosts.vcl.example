@@ -1,0 +1,16 @@
+#
+#  Disabled hosts
+#
+# Include in this file the hosts that should not be cached
+#
+
+sub disabledhosts__recv {
+
+  if(
+    req.http.host ~ "^no-cache.example.com$"
+    ) {
+
+    return (pass);
+  }
+
+}

@@ -1,6 +1,7 @@
 secret
 backends.vcl
 hosts.vcl
+disabled-hosts.vcl
 
 backends/*.vcl
 directors/*.vcl
