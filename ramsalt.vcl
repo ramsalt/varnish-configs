@@ -51,13 +51,13 @@ sub vcl_recv {
   call disabledhosts__recv;
 
   # Allow the backend to serve up stale content if it is responding slowly.
-  ## We archieve this allowing to keep the content one extra hour
+  ## We archieve this allowing to keep the expired content for a longer time
   if (req.backend.healthy) {
     set req.grace = 1h;
   } else {
     # On the other hand is the backend is not healthy keep the pages
     # as long as possible and serve cached pages also to non legged in users!
-    set req.grace = 6h;
+    set req.grace = 1w;
     unset req.http.Cookie;
   }
 
@@ -145,7 +145,16 @@ sub vcl_fetch {
   call esi_block__fetch;
 
   # Allow items to be stale if needed.
-  set beresp.grace = 6h;
+  if( beresp.ttl > 0s ) {
+    # Remove Expires from backend
+    unset beresp.http.expires;
+
+    # Varnish should keep this item for a while if it does not get purged
+    set beresp.ttl = 6h;
+    # Allow to server the content for much longer, in case the backend goes down!
+    set beresp.grace = 2d;
+  }
+
 }
 
 
@@ -155,6 +164,7 @@ sub vcl_deliver {
   # Add an header to mark HITs or MISSes on the current request.
   if (obj.hits > 0) {
     set resp.http.X-Varnish-Cache = "HIT";
+    set resp.http.X-Varnish-Cache-Hits = obj.hits; 
   }
   else {
     set resp.http.X-Varnish-Cache = "MISS";
