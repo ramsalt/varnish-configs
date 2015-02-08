@@ -1,11 +1,11 @@
 #
-# Web1.Stack1 Varnish config file
+# Server01 @ NYC Varnish config file
 #
 
-probe stack1_web1_alive {
+probe nyc_server01_alive {
   .request =
-    "GET /utils/varnish/status.php HTTP/1.1"
-    "Host: web1.stack1.ramsalt.com"
+    "GET /status.php HTTP/1.1"
+    "Host: server01.nyc.example.com"
     "Connection: close";
   .interval    = 1s;
   .timeout     = 1s;
@@ -14,14 +14,14 @@ probe stack1_web1_alive {
   .expected_response = 200;
 }
 
-backend stack1_web1 {
-  .probe = stack1_web1_alive;
+backend myc_server01 {
+  .probe = nyc_server01_alive;
 
-  .host = "192.168.151.69";
+  .host = "x.x.x.x";
   .port = "80";
 
-  .connect_timeout       = 5s;
-  .first_byte_timeout    = 20s;
+  .connect_timeout       = 1s;
+  .first_byte_timeout    = 10s;
   .between_bytes_timeout = 150ms;
 } 
 
