@@ -41,11 +41,6 @@ sub vcl_recv {
     error 200 "Varnish is Ready";
   }
 
-  if (req.request != "GET" && req.request != "HEAD") {
-      /* We only deal with GET and HEAD by default */
-      return (pass);
-  } 
-
   # Switch the backend based on the host
   call virtualhost__recv;
   call disabledhosts__recv;
@@ -59,6 +54,11 @@ sub vcl_recv {
     # as long as possible and serve cached pages also to non legged in users!
     set req.grace = 1w;
     unset req.http.Cookie;
+  }
+
+  # We only deal with GET and HEAD by default
+  if (req.request != "GET" && req.request != "HEAD") {
+      return (pass);
   }
 
   # Handle compression correctly. Different browsers send different
