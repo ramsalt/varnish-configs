@@ -157,6 +157,9 @@ sub vcl_fetch {
 
 }
 
+sub vcl_pipe {
+  set bereq.http.connection = "close";
+}
 
 sub vcl_deliver {
   set resp.http.X-Varnish-Server = server.hostname;
