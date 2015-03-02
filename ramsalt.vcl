@@ -198,14 +198,16 @@ sub vcl_error {
 <html>
 <head>
   <title>Page Temporary Unavailable</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="initial-scale=1.0"/>
   <style>
-    body { background: #303030; text-align: center; color: white; }
-    #page { border: 1px solid #CCC; width: 500px; margin: 100px auto 0; padding: 30px; background: #323232; }
-    a, a:link, a:visited { color: #CCC; }
-    .error { color: #222; }
+    body { background: rgb(185, 223, 191); }
+    h1, h2, h3 { font-weight: 600; text-align: center; }
+    #page { min-width: 300px; width: 30%; margin: 50px auto 0; padding: 15px; }
+    body, a, a:link, a:visited { font-family: "Avenir", Tahoma, Arial, sans-serif; font-weight: 200; color: black; }
   </style>
 </head>
-<body onload="setTimeout(function() { window.location = '/' }, 3000)">
+<body onload="setTimeout(function() { window.location = '/' }, 5000)">
   <div id="page">
     <h1 class="title">Page Temporary Unavailable</h1>
     <p>The page you requested is temporarily unavailable.</p>

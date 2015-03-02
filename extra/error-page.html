@@ -1,0 +1,25 @@
+<html>
+<head>
+  <title>Page Temporary Unavailable</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="initial-scale=1.0"/>
+  <style>
+    body { background: rgb(185, 223, 191); }
+    h1, h2, h3 { font-weight: 600; text-align: center; }
+    #page { min-width: 300px; width: 30%; margin: 50px auto 0; padding: 15px; }
+    body, a, a:link, a:visited { font-family: "Avenir", Tahoma, Arial, sans-serif; font-weight: 200; color: black; }
+  </style>
+</head>
+<body onload="setTimeout(function() { window.location = '/' }, 5000)">
+  <div id="page">
+    <h1 class="title">Page Temporary Unavailable</h1>
+    <p>
+       INSERT_MESSAGE_HERE
+      <br/>Beklager uleiligheten,
+      <br/>&nbsp;&nbsp;<strong>Ramsalt Lab</strong>
+    </p>
+    <p>You will be redirected to the frontpage in a few seconds, <a href="/">click here if you don't want to wait</a>!.</p>
+    <div style="display:none" class="error">(Error "} + obj.status + " " + obj.response + {")</div>
+  </div>
+</body>
+</html>
