@@ -162,6 +162,10 @@ sub vcl_fetch {
 
 }
 
+sub vcl_pass {
+  call drupal__pass;
+}
+
 sub vcl_pipe {
   set bereq.http.connection = "close";
 }

@@ -5,12 +5,19 @@
 
 sub drupal__recv {
 
+  # Pipe these paths directly to Apache for streaming.
+  if (
+      req.url ~ "^/admin/content/backup_migrate/export"
+     ) {
+    return (pipe);
+  
+}
   # Do not cache these paths.
   if (
       req.url ~ "^/status\.php$" ||
       req.url ~ "^/update\.php$" ||
       req.url ~ "^/ooyala/ping$" ||
-      req.url ~ "^/admin/build/features" ||
+      req.url ~ "^/admin/" ||
       req.url ~ "^/info/.*$" ||
       req.url ~ "^/flag/.*$" ||
       req.url ~ "^.*/ajax/.*$" ||
@@ -19,14 +26,6 @@ sub drupal__recv {
       req.url ~ "^/gauth/.*$"
      ) {
     return (pass);
-  }
-
-
-  # Pipe these paths directly to Apache for streaming.
-  if (
-      req.url ~ "^/admin/content/backup_migrate"
-     ) {
-    return (pipe);
   }
 
   # Do not allow outside access to cron.php or install.php.
@@ -89,6 +88,17 @@ sub drupal__recv {
 
 }
 
+sub drupal__pass {
+
+  if (
+      req.url ~ "^/status\.php$" ||
+      req.url ~ "^/update\.php$" ||
+      req.url ~ "^/admin/" 
+     ) {
+    set bereq.first_byte_timeout = 120s;
+  }
+
+}
 
 sub drupal__hash {
 
