@@ -5,6 +5,7 @@
 # see: https://github.com/Lullabot/varnish/blob/varnish-4.x/drupal-ha.vcl
 # 
 # ref: https://www.lullabot.com/blog/article/configuring-varnish-high-availability-multiple-web-servers
+import std;
 
 # Access Control Lists
 include "acl.vcl";
@@ -48,11 +49,11 @@ sub vcl_recv {
   # Allow the backend to serve up stale content if it is responding slowly.
   ## We archieve this allowing to keep the expired content for a longer time
   if (req.backend.healthy) {
-    set req.grace = 1h;
+    set req.grace = 30m;
   } else {
     # On the other hand is the backend is not healthy keep the pages
     # as long as possible and serve cached pages also to non legged in users!
-    set req.grace = 1w;
+    set req.grace = 1d;
     unset req.http.Cookie;
   }
 
@@ -133,6 +134,7 @@ sub vcl_fetch {
   if (req.url ~ "(?i)\.(png|gif|jpeg|jpg|ico|swf|css|js|html|htm)(\?[a-z0-9]+)?$") {
     # beresp == Back-end response from the web server.
     unset beresp.http.set-cookie;
+    set beresp.ttl = 3600s;
   }
   else if (beresp.http.Content-Type ~ "html") {
     # Enable ESI (Edge Side Include) for (only) html pages.
@@ -145,14 +147,17 @@ sub vcl_fetch {
   call esi_block__fetch;
 
   # Allow items to be stale if needed.
-  if( beresp.ttl > 0s ) {
+  if( beresp.ttl <= 0s ) {
+    return (hit_for_pass);
+  }
+  else {
     # Remove Expires from backend
     unset beresp.http.expires;
 
     # Varnish should keep this item for a while if it does not get purged
-    set beresp.ttl = 6h;
+    #set beresp.ttl = 6h;
     # Allow to server the content for much longer, in case the backend goes down!
-    set beresp.grace = 2d;
+    set beresp.grace = 1d;
   }
 
 }
@@ -166,7 +171,7 @@ sub vcl_deliver {
 
   # Add an header to mark HITs or MISSes on the current request.
   if (obj.hits > 0) {
-    set resp.http.X-Varnish-Cache = "HIT";
+    #set resp.http.X-Varnish-Cache = "HIT";
     set resp.http.X-Varnish-Cache-Hits = obj.hits; 
   }
   else {
