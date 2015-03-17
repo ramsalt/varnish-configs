@@ -1,0 +1,15 @@
+#
+# Ramslt Host Definition
+#
+# Switch the backend / director based on the required host
+
+sub redirects__recv {
+
+
+  # Stack1.Web1 hosted websites
+  if ( req.http.host ~ "^subdomain\.example\.com$" ) {
+    error 750 "http://example.com/path/to/pahe.html";
+  }
+
+}
+

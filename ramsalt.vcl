@@ -14,6 +14,7 @@ include "acl.vcl";
 include "backends.vcl";
 
 # Including host definition, used to switch through the backends based on the v-host
+include "redirects.vcl";
 include "hosts.vcl";
 include "disabled-hosts.vcl";
 # Drupal related tasks
@@ -43,6 +44,7 @@ sub vcl_recv {
   }
 
   # Switch the backend based on the host
+  call redirects__recv;
   call virtualhost__recv;
   call disabledhosts__recv;
 

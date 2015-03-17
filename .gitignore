@@ -1,5 +1,6 @@
 secret
 backends.vcl
+redirects.vcl
 hosts.vcl
 disabled-hosts.vcl
 
