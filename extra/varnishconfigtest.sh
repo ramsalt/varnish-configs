@@ -18,10 +18,12 @@ if [ ! -s $tmpfile ]; then
     exit 1
 else
     echo "All good!"
-#    read -p "No Errors, do you want to reload Varnish? [y/n]: " ans;
-#    if [ $ans = 'y]' ]; then 
-#        echo "`/usr/sbin/service varnish reload`"
-#    fi
+    read -p "Do you want to reload Varnish? [y/n]: " ans;
+    if [ $ans = 'y' ]; then 
+        echo "`/usr/sbin/service varnish reload`"
+    else
+        echo "Great, have a nice day!"
+    fi
     exit 0
 fi
 
