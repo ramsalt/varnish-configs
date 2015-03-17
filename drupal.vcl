@@ -7,7 +7,7 @@ sub drupal__recv {
 
   # Pipe these paths directly to Apache for streaming.
   if (
-      req.url ~ "^/admin/content/backup_migrate/export"
+      req.url ~ "^/admin/content/backup_migrate/.*\.gz"
      ) {
     return (pipe);
   

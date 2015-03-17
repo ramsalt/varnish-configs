@@ -132,6 +132,15 @@ sub vcl_hash {
 # Code determining what to do when serving items from the Apache servers.
 sub vcl_fetch {
 
+  # Bug fix for 302 redirects with gzip enabled
+  # Issue #1320 : https://www.varnish-cache.org/trac/ticket/1320
+  # see: https://www.varnish-cache.org/lists/pipermail/varnish-misc/2013-July/023178.html
+  if (beresp.http.Content-Encoding ~ "gzip" ) {
+     if (beresp.http.Content-Length == "0") {
+       unset beresp.http.Content-Encoding;
+     }
+  }
+
   # Don't allow static files to set cookies.
   if (req.url ~ "(?i)\.(png|gif|jpeg|jpg|ico|swf|css|js|html|htm)(\?[a-z0-9]+)?$") {
     # beresp == Back-end response from the web server.

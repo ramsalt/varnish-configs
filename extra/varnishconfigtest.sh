@@ -17,10 +17,11 @@ if [ ! -s $tmpfile ]; then
     echo "ERROR: There are errors in the varnish configuration." >&2
     exit 1
 else
-    read -p "No Errors, do you want to restart Varnish? [y/n]: " ans;
-    if [ $ans = 'y]' ]; then 
-        echo -e "$(/etc/init.d/varnish restart)"
-    fi
+    echo "All good!"
+#    read -p "No Errors, do you want to reload Varnish? [y/n]: " ans;
+#    if [ $ans = 'y]' ]; then 
+#        echo "`/usr/sbin/service varnish reload`"
+#    fi
     exit 0
 fi
 
