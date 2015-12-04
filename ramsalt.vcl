@@ -63,6 +63,10 @@ sub vcl_recv {
   if (req.request != "GET" && req.request != "HEAD") {
       return (pass);
   }
+  # HTTP Authenticated request are not cached by default
+  if ( req.http.Authorization || req.http.Authenticate ) {
+      return (pass);
+  }
 
   # Handle compression correctly. Different browsers send different
   # "Accept-Encoding" headers, even though they mostly all support the same
