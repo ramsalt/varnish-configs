@@ -105,7 +105,7 @@ sub drupal__hash {
   # Since Drupal 7.21 the images are loaded with a "iotok", which is always different
   #  to mitigeate this problem we remove the token to calculate the hash for the content
   #hash_data(req.http.host);
-  hash_data( regsub(req.url, "\?(.*)itok=.+[^&]", "\1") );
+  hash_data( regsub(req.url, "(.*)itok=.+[^&]", "\1") );
 
 }
 
