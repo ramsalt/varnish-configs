@@ -132,6 +132,9 @@ sub vcl_hash {
 # Code determining what to do when serving items from the Apache servers.
 sub vcl_fetch {
 
+  # Add backend name to the response to be used in the vcl_deliver
+  set req.http.X-Backend = beresp.backend.name;
+
   # Bug fix for 302 redirects with gzip enabled
   # Issue #1320 : https://www.varnish-cache.org/trac/ticket/1320
   # see: https://www.varnish-cache.org/lists/pipermail/varnish-misc/2013-July/023178.html
@@ -183,6 +186,7 @@ sub vcl_pipe {
 
 sub vcl_deliver {
   set resp.http.X-Varnish-Server = server.hostname;
+  set resp.http.X-Varnish-Backend = req.http.X-Backend;
 
   # Add an header to mark HITs or MISSes on the current request.
   if (obj.hits > 0) {
