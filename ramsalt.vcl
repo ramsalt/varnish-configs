@@ -89,8 +89,10 @@ sub vcl_recv {
   }
 
   # Always cache the following file types for all users.
+  # And disable the gzip compression
   if (req.url ~ "(?i)\.(png|gif|jpeg|jpg|ico|swf|css|js|html|htm)(\?[a-z0-9]+)?$") {
     unset req.http.Cookie;
+    unset req.http.Accept-Encoding;
   }
 
 
@@ -143,7 +145,8 @@ sub vcl_fetch {
   # Issue #1320 : https://www.varnish-cache.org/trac/ticket/1320
   # see: https://www.varnish-cache.org/lists/pipermail/varnish-misc/2013-July/023178.html
   if (beresp.http.Content-Encoding ~ "gzip" ) {
-     if (beresp.http.Content-Length == "0") {
+     if ( (beresp.status >= 300 && beresp.status < 400) && (!beresp.http.Content-Length || beresp.http.Content-Length == "0")) {
+     #if ( beresp.http.Content-Length == "0") {
        unset beresp.http.Content-Encoding;
      }
   }
