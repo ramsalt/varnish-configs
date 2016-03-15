@@ -145,7 +145,7 @@ sub vcl_fetch {
   # Issue #1320 : https://www.varnish-cache.org/trac/ticket/1320
   # see: https://www.varnish-cache.org/lists/pipermail/varnish-misc/2013-July/023178.html
   if (beresp.http.Content-Encoding ~ "gzip" ) {
-     if ( (beresp.status >= 300 && beresp.status < 400) && (!beresp.http.Content-Length || beresp.http.Content-Length == "0")) {
+     if ( (beresp.status >= 300 && beresp.status < 400) && (!beresp.http.Content-Length || std.integer(beresp.http.Content-Length, 0) <= 0)) {
      #if ( beresp.http.Content-Length == "0") {
        unset beresp.http.Content-Encoding;
      }
@@ -155,7 +155,7 @@ sub vcl_fetch {
   if (req.url ~ "(?i)\.(png|gif|jpeg|jpg|ico|swf|css|js|html|htm)(\?[a-z0-9]+)?$") {
     # beresp == Back-end response from the web server.
     unset beresp.http.set-cookie;
-    set beresp.ttl = 3600s;
+    set beresp.ttl = std.duration("1h", 3600s);
   }
   else if (beresp.http.Content-Type ~ "html") {
     # Enable ESI (Edge Side Include) for (only) html pages.
@@ -178,7 +178,7 @@ sub vcl_fetch {
     # Varnish should keep this item for a while if it does not get purged
     #set beresp.ttl = 6h;
     # Allow to server the content for much longer, in case the backend goes down!
-    set beresp.grace = 1d;
+    set beresp.grace = std.duration("1d", 3600s);
   }
 
 }
