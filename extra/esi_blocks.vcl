@@ -87,11 +87,11 @@ sub esi_block__fetch {
   # header.  This removes the header and inserts the block into the cache.
 
   # 3.0
-  if( beresp.http.Cache-Control ~ "private" ) {
-    unset beresp.http.Set-Cookie;
-    unset beresp.http.Cache-Control;
-    return (deliver);
-  }
+  #if( beresp.http.Cache-Control ~ "private" ) {
+  #  unset beresp.http.Set-Cookie;
+  #  unset beresp.http.Cache-Control;
+  #  return (deliver);
+  #}
   # 2.x
   #if( obj.http.Cache-Control ~ "private" ) {
   #  unset obj.http.Set-Cookie;
