@@ -17,11 +17,14 @@ sub drupal__recv {
       req.url ~ "^/status\.php$" ||
       req.url ~ "^/update\.php$" ||
       req.url ~ "^/ooyala/ping$" ||
-      req.url ~ "^/admin/" ||
+      # User pages (with optional lang prefix)
+      req.url ~ "^(/[a-z]{2})?/user(/reset)?/\d+" ||
+      # Admin section (with optional lang prefix)
+      req.url ~ "^(/[a-z]{2})?/admin/" ||
       req.url ~ "^/info/.*$" ||
       req.url ~ "^/flag/.*$" ||
-      req.url ~ "^.*/ajax/.*$" ||
-      req.url ~ "^.*/ahah/.*$" ||
+      req.url ~ "/ajax/" ||
+      req.url ~ "/ahah/" ||
       # Google Login Auth
       req.url ~ "^/gauth/.*$"
      ) {
