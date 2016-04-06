@@ -222,6 +222,11 @@ sub vcl_error {
     set obj.status = 302;
     return(deliver);
   }
+  else if ( obj.status == 410 ) {
+    set obj.http.Content-Type = "text/html; charset=utf-8";
+    synthetic std.fileread("/etc/varnish/extra/error-410.html");
+    return (deliver);
+  }
 
   # Otherwise redirect to the homepage, which will likely be in the cache.
   set obj.http.Content-Type = "text/html; charset=utf-8";

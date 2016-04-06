@@ -2,10 +2,12 @@
 #  Disabled hosts
 #
 # Include in this file the hosts that should not be cached
+#  and hosts that are considered "Dead end", and should return a 410 response
 #
 
 sub disabledhosts__recv {
 
+  # Do not cache this hosts, just pass the request (useful for load-balancing only)
   if(
     req.http.host ~ "^no-cache.example.com$"
     ) {
@@ -13,4 +15,13 @@ sub disabledhosts__recv {
     return (pass);
   }
 
+  # Completely disable the site, returning a "410 Gone" response
+  if(
+    req.http.host ~ "^no-cache.example.com$"
+    ) {
+
+    error 410;
+  }
+
 }
+
