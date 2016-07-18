@@ -43,6 +43,10 @@ sub vcl_recv {
     error 200 "Varnish is Ready";
   }
 
+  # Remove Proxy header to mitigate "HTTP Poxy" attacks
+  # @see https://httpoxy.org/
+  unset req.http.proxy;
+
   # Switch the backend based on the host
   call redirects__recv;
   call virtualhost__recv;
